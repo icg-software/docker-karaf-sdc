@@ -1,0 +1,30 @@
+#!/bin/bash
+
+rm /opt/karaf/firstboot
+
+if [[ ! -z "${FETCH_CUSTOM_URL}" ]] 
+then
+    if [ "${FETCH_CUSTOM_URL}" != "NONE" ]
+    then
+        wget ${FETCH_CUSTOM_URL} -P /opt/karaf/etc
+    fi
+fi
+
+if [ -f  /opt/karaf/etc/custom_etc.zip ]
+then
+    unzip -o /opt/karaf/etc/custom_etc.zip -d /opt/karaf/etc
+fi
+
+if [[ ! -z "${KARAF_INIT_COMMANDS}" ]]
+then
+    if [ "${KARAF_INIT_COMMANDS}" != "NONE" ]
+    then
+        echo ${KARAF_INIT_COMMANDS} > /opt/karaf/bin/initcommands
+        /opt/karaf/bin/installscript1.sh  >> /opt/karaf/data/initcommands.log 2>&1 &
+    fi
+fi
+
+if [ -f  /opt/karaf/etc/initcommands ]
+then
+    /opt/karaf/bin/installscript2.sh >> /opt/karaf/data/initcommands.log 2>&1 &
+fi
