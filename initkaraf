@@ -2,6 +2,18 @@
 
 rm /opt/karaf/firstboot
 
+tar -C /opt/karaf/etc --skip-old-files -xzf /opt/karaf/etc.tgz
+
+if [ "${CLEAN_CACHE}" = "true" ]
+then
+  rm -rf /opt/karaf/data/cache
+fi
+
+if [ "${CLEAN_CACHE}" = "TRUE" ]
+then
+  rm -rf /opt/karaf/data/cache
+fi
+
 if [[ ! -z "${FETCH_CUSTOM_URL}" ]] 
 then
     if [ "${FETCH_CUSTOM_URL}" != "NONE" ]
@@ -28,3 +40,5 @@ if [ -f  /opt/karaf/etc/initcommands ]
 then
     /opt/karaf/bin/installscript2.sh >> /opt/karaf/data/initcommands.log 2>&1 &
 fi
+
+# TODO etc/override

@@ -2,9 +2,12 @@ FROM centos:7
 
 MAINTAINER spalarus <s.palarus@googlemail.com>
 
-ARG SDC_DIST_VERSION=0.4.0
+ARG SDC_DIST_VERSION=0.5.1
 ENV KARAF_HOME=/opt/karaf
 ENV KARAF_BASE=/opt/karaf
+ENV HOME=/opt/karaf
+ENV JAVA_HOME=/etc/alternatives/jre_11_openjdk
+ENV JRE_HOME=/etc/alternatives/jre_11_openjdk
 
 ADD ./entrypoint.sh /entrypoint.sh
 ADD ./initkaraf /opt/karaf/bin/initkaraf
@@ -28,22 +31,28 @@ RUN yum update -y && \
     chmod u+x /opt/karaf/bin/initkaraf && \
     yum clean all && \
     rm -rf /var/cache/yum
-
+    
+ADD ./buildboot.sh /tmp/buildboot.sh
+    
+RUN sudo -E -u karaf bash /tmp/buildboot.sh && \
+    rm /tmp/buildboot.sh && \
+    rm /opt/karaf/etc/host.key && \
+    rm /opt/karaf/etc/host.key.pub && \
+    tar --directory /opt/karaf/etc -czvf /opt/karaf/etc.tgz .
+    
 USER karaf
 WORKDIR ${KARAF_HOME}
 
-ENV HOME=/opt/karaf
-ENV JAVA_HOME=/etc/alternatives/jre_11_openjdk
-ENV JRE_HOME=/etc/alternatives/jre_11_openjdk
 ENV JAVA_OPTS=
 ENV FETCH_CUSTOM_URL=NONE
 ENV KARAF_INIT_COMMANDS=NONE
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
+ENV CLEAN_CACHE=false
 
 VOLUME ["/opt/karaf/deploy","/opt/karaf/etc","/opt/karaf/data"]
-EXPOSE 1099 8101 8181 44444 10636 61616
+EXPOSE 1099 8101 8181 44444 10636 61617
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Define default command.
