@@ -2,7 +2,7 @@ FROM centos:7
 
 MAINTAINER spalarus <s.palarus@googlemail.com>
 
-ARG SDC_DIST_VERSION=0.5.3
+ARG SDC_DIST_VERSION=0.5.5
 ENV KARAF_HOME=/opt/karaf
 ENV KARAF_BASE=/opt/karaf
 ENV HOME=/opt/karaf
