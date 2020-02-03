@@ -20,7 +20,7 @@ RUN yum update -y && \
     groupadd -r karaf -g 1777 && \
     useradd -u 1777 -r -g karaf -m -d /opt/karaf -s /sbin/nologin -c "Karaf user" karaf && \
     chmod 755 /opt/karaf && \
-    wget http://central.maven.org/maven2/org/sodeac/org.sodeac.karaf.assembly/${SDC_DIST_VERSION}/org.sodeac.karaf.assembly-${SDC_DIST_VERSION}.tar.gz && \
+    wget https://repo1.maven.org/maven2/org/sodeac/org.sodeac.karaf.assembly/${SDC_DIST_VERSION}/org.sodeac.karaf.assembly-${SDC_DIST_VERSION}.tar.gz && \
     tar --strip-components=1 -C /opt/karaf -xzf org.sodeac.karaf.assembly-${SDC_DIST_VERSION}.tar.gz && \
     rm org.sodeac.karaf.assembly-${SDC_DIST_VERSION}.tar.gz && \
     touch /opt/karaf/firstboot && \
