@@ -2,5 +2,6 @@
 sleep 333
 /opt/karaf/bin/client -r 93  "shell:sleep 1;"
 sleep 93
-/opt/karaf/bin/client -r 3  -l 2 "shutdown -f;" 
+/opt/karaf/bin/client -r 3  -l 2 -b < /tmp/build.commands
+/opt/karaf/bin/client -r 3  -l 2 -u karaf -p karaf "shutdown -f;" 
 sleep 33 

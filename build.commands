@@ -1,0 +1,65 @@
+# crypted passwords
+config:edit org.apache.karaf.jaas
+config:property-set encryption.enabled true
+config:update;
+
+shell:sleep 1;
+
+# create special role for sftp users with private home directory
+jaas:realm-manage --index 1;
+jaas:group-create sftphomegroup;
+jaas:update;
+
+shell:sleep 1;
+
+jaas:realm-manage --index 1;
+jaas:group-role-add sftphomegroup ssh;
+jaas:update;
+
+shell:sleep 1;
+
+jaas:realm-manage --index 1;
+jaas:group-role-add sftphomegroup sftphome;
+jaas:update;
+
+shell:sleep 1;
+
+# secure shell for admingroup
+jaas:realm-manage --index 1;
+jaas:group-role-add admingroup sshconsole;
+jaas:update;
+
+shell:sleep 1;
+
+# sftp access to ${karaf.base} for admingroup 
+jaas:realm-manage --index 1;
+jaas:group-role-add admingroup sftpkaraf;
+jaas:update;
+
+shell:sleep 1;
+
+# create user sftpuser with access to private home
+jaas:realm-manage --index 1;
+jaas:user-add sftpuser secret;
+jaas:update;
+
+shell:sleep 1;
+
+jaas:realm-manage --index 1;
+jaas:group-add sftpuser sftphomegroup;
+jaas:update;
+
+shell:sleep 1;
+
+# configuration
+config:edit org.sodeac.org.sodeac.karaf.sftphome
+config:property-set homeroot /opt/karaf/vol/home
+config:property-set rolesecureshell sshconsole
+config:property-set rolehomedir sftphome
+config:property-set rolekarafbasedir sftpkaraf
+config:update;
+
+# log properties
+log:set WARN org.apache.activemq.audit.base;
+log:set WARN org.apache.sshd.server.session.ServerUserAuthService;
+

@@ -2,7 +2,7 @@ FROM centos:7
 
 MAINTAINER spalarus <s.palarus@googlemail.com>
 
-ARG SDC_DIST_VERSION=0.5.5
+ARG SDC_DIST_VERSION=0.6.0
 ENV KARAF_HOME=/opt/karaf
 ENV KARAF_BASE=/opt/karaf
 ENV HOME=/opt/karaf
@@ -11,8 +11,10 @@ ENV JRE_HOME=/etc/alternatives/jre_11_openjdk
 
 ADD ./entrypoint.sh /entrypoint.sh
 ADD ./initkaraf /opt/karaf/bin/initkaraf
-ADD ./installscript1.sh /opt/karaf/bin/installscript1.sh
-ADD ./installscript2.sh /opt/karaf/bin/installscript2.sh
+ADD ./installscript1 /opt/karaf/bin/installscript1
+ADD ./installscript2 /opt/karaf/bin/installscript2
+ADD ./checketcstorage /opt/karaf/bin/checketcstorage
+ADD ./touchetcstorage /opt/karaf/bin/touchetcstorage
 
 RUN yum update -y && \
     yum install -y wget curl zip unzip vim sudo && \
@@ -24,21 +26,26 @@ RUN yum update -y && \
     tar --strip-components=1 -C /opt/karaf -xzf org.sodeac.karaf.assembly-${SDC_DIST_VERSION}.tar.gz && \
     rm org.sodeac.karaf.assembly-${SDC_DIST_VERSION}.tar.gz && \
     touch /opt/karaf/firstboot && \
+    mkdir /opt/karaf/vol && \
     chown -R karaf /opt/karaf && \
     chmod u+x /entrypoint.sh && \
-    chmod u+x /opt/karaf/bin/installscript1.sh && \
-    chmod u+x /opt/karaf/bin/installscript2.sh && \
+    chmod u+x /opt/karaf/bin/checketcstorage && \
+    chmod u+x /opt/karaf/bin/touchetcstorage && \
+    chmod u+x /opt/karaf/bin/installscript1 && \
+    chmod u+x /opt/karaf/bin/installscript2 && \
     chmod u+x /opt/karaf/bin/initkaraf && \
     yum clean all && \
     rm -rf /var/cache/yum
     
 ADD ./buildboot.sh /tmp/buildboot.sh
+ADD ./build.commands /tmp/build.commands
     
 RUN sudo -E -u karaf bash /tmp/buildboot.sh && \
     rm /tmp/buildboot.sh && \
+    rm /tmp/build.commands && \
     rm /opt/karaf/etc/host.key && \
     rm /opt/karaf/etc/host.key.pub && \
-    tar --directory /opt/karaf/etc -czvf /opt/karaf/etc.tgz .
+    tar --directory /opt/karaf/etc -czvf /opt/karaf/etc_original.tgz .
     
 USER karaf
 WORKDIR ${KARAF_HOME}
@@ -46,12 +53,16 @@ WORKDIR ${KARAF_HOME}
 ENV JAVA_OPTS=
 ENV FETCH_CUSTOM_URL=NONE
 ENV KARAF_INIT_COMMANDS=NONE
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 ENV CLEAN_CACHE=false
+ENV LINK_VOL_DEPLOY=true
+ENV LINK_VOL_LOG=true
+ENV LINK_VOL_MSG_BROKER=true
+ENV LINK_VOL_TMP=true
 
-VOLUME ["/opt/karaf/deploy","/opt/karaf/etc","/opt/karaf/data"]
+VOLUME ["/opt/karaf/vol"]
 EXPOSE 1099 8101 8181 44444 10636 61617
 ENTRYPOINT ["/entrypoint.sh"]
 
