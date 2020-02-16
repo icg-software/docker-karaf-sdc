@@ -1,6 +1,0 @@
-#!/bin/bash
-
-sleep 7
-/opt/karaf/bin/client -r 11 -u karaf -p karaf "shell:sleep 1;"
-sleep 3
-/opt/karaf/bin/client -r 7 -l 2 -u karaf -p karaf -b < /opt/karaf/bin/initcommands
