@@ -26,7 +26,17 @@ then
    mkdir /opt/karaf/vol/home
 fi
 
-cp /opt/karaf/etc_original.tgz /opt/karaf/vol/
+if [ ! -d "/opt/karaf/vol/bin" ]
+then
+   mkdir /opt/karaf/vol/bin
+fi
+
+if [ ! -d "/opt/karaf/vol/backup" ]
+then
+   mkdir /opt/karaf/vol/backup
+fi
+
+cp /opt/karaf/etc_original.tgz /opt/karaf/vol/backup/
 
 
 if [[ "${LINK_VOL_DEPLOY}" = "true" || "${LINK_VOL_DEPLOY}" = "TRUE" ]]
@@ -98,13 +108,13 @@ then
     if [ "${KARAF_INIT_COMMANDS}" != "NONE" ]
     then
         echo ${KARAF_INIT_COMMANDS} > /opt/karaf/bin/initcommands
-        /opt/karaf/bin/installscript1  >> /opt/karaf/data/initcommands.log 2>&1 &
+        /opt/karaf/bin/varinitrunner  >> /opt/karaf/data/log/initcommands.log 2>&1 &
     fi
 fi
 
 
 if [ -f  /opt/karaf/vol/bin/initcommands ]
 then
-    /opt/karaf/bin/installscript2 >> /opt/karaf/data/initcommands.log 2>&1 &
+    /opt/karaf/bin/fileinitrunner >> /opt/karaf/data/log/initcommands.log 2>&1 &
 fi
 

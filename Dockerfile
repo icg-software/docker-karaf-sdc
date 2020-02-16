@@ -11,10 +11,10 @@ ENV JRE_HOME=/etc/alternatives/jre_11_openjdk
 
 ADD ./entrypoint.sh /entrypoint.sh
 ADD ./initkaraf /opt/karaf/bin/initkaraf
-ADD ./installscript1 /opt/karaf/bin/installscript1
-ADD ./installscript2 /opt/karaf/bin/installscript2
-ADD ./checketcstorage /opt/karaf/bin/checketcstorage
-ADD ./touchetcstorage /opt/karaf/bin/touchetcstorage
+ADD ./varinitrunner /opt/karaf/bin/varinitrunner
+ADD ./fileinitrunner /opt/karaf/bin/fileinitrunner
+ADD ./checkvoletc /opt/karaf/bin/checkvoletc
+ADD ./touchvoletc /opt/karaf/bin/touchvoletc
 
 RUN yum update -y && \
     yum install -y wget curl zip unzip vim sudo && \
@@ -27,12 +27,12 @@ RUN yum update -y && \
     rm org.sodeac.karaf.assembly-${SDC_DIST_VERSION}.tar.gz && \
     touch /opt/karaf/firstboot && \
     mkdir /opt/karaf/vol && \
-    chown -R karaf /opt/karaf && \
+    chown -R karaf.karaf /opt/karaf && \
     chmod u+x /entrypoint.sh && \
-    chmod u+x /opt/karaf/bin/checketcstorage && \
-    chmod u+x /opt/karaf/bin/touchetcstorage && \
-    chmod u+x /opt/karaf/bin/installscript1 && \
-    chmod u+x /opt/karaf/bin/installscript2 && \
+    chmod u+x /opt/karaf/bin/checkvoletc && \
+    chmod u+x /opt/karaf/bin/touchvoletc && \
+    chmod u+x /opt/karaf/bin/varinitrunner && \
+    chmod u+x /opt/karaf/bin/fileinitrunner && \
     chmod u+x /opt/karaf/bin/initkaraf && \
     yum clean all && \
     rm -rf /var/cache/yum
@@ -45,7 +45,8 @@ RUN sudo -E -u karaf bash /tmp/buildboot.sh && \
     rm /tmp/build.commands && \
     rm /opt/karaf/etc/host.key && \
     rm /opt/karaf/etc/host.key.pub && \
-    tar --directory /opt/karaf/etc -czvf /opt/karaf/etc_original.tgz .
+    tar --directory /opt/karaf/etc -czvf /opt/karaf/etc_original.tgz . && \
+    chown karaf.karaf /opt/karaf/etc_original.tgz
     
 USER karaf
 WORKDIR ${KARAF_HOME}
@@ -61,6 +62,8 @@ ENV LINK_VOL_DEPLOY=true
 ENV LINK_VOL_LOG=true
 ENV LINK_VOL_MSG_BROKER=true
 ENV LINK_VOL_TMP=true
+ENV INIT_SCRIPT_USER=karaf
+ENV INIT_SCRIPT_PWD=karaf
 
 VOLUME ["/opt/karaf/vol"]
 EXPOSE 1099 8101 8181 44444 10636 61617

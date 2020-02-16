@@ -38,19 +38,6 @@ jaas:update;
 
 shell:sleep 1;
 
-# create user sftpuser with access to private home
-jaas:realm-manage --index 1;
-jaas:user-add sftpuser secret;
-jaas:update;
-
-shell:sleep 1;
-
-jaas:realm-manage --index 1;
-jaas:group-add sftpuser sftphomegroup;
-jaas:update;
-
-shell:sleep 1;
-
 # configuration
 config:edit org.sodeac.org.sodeac.karaf.sftphome
 config:property-set homeroot /opt/karaf/vol/home
