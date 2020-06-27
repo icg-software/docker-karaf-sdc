@@ -50,3 +50,7 @@ config:update;
 log:set WARN org.apache.activemq.audit.base;
 log:set WARN org.apache.sshd.server.session.ServerUserAuthService;
 
+shell:sleep 1;
+shell:echo ok > /tmp/karaf.valid;
+shell:sleep 1;
+
