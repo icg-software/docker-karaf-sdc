@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ ! -d "/opt/karaf/vol/home" ]
+then
+   mkdir /opt/karaf/vol/home
+fi
+
+/opt/karaf/bin/volumelinker LINK_VOL_MSG_BROKER /data/artemis /artemis
+
+rm ${0}
